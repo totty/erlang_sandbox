@@ -3,3 +3,7 @@
 *.beam
 *.txt
 *.log
+
+another
+docs
+rabbitmq*
