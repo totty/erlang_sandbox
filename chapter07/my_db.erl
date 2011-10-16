@@ -1,6 +1,7 @@
 -module(my_db).
 -export([start/0, stop/0, write/2, delete/1, read/1, match/1]).
 -export([init/0]).
+-include("debug.hrl").
 
 start() ->
   register(my_db, spawn(my_db, init, [])),
@@ -35,15 +36,21 @@ match(Element) ->
 
 loop(Db) ->
   receive
-    stop -> ok;
+    stop ->
+      ?DEBUG(stop, []),
+      ok;
     {write, _Pid, [Key, Element]} ->
+      ?DEBUG(write, [Key, Element]),
       loop(db:write(Key, Element, Db));
     {delete, _Pid, [Key]} ->
+      ?DEBUG(delete, [Key]),
       loop(db:delete(Key, Db));
     {read, Pid, [Key]} ->
+      ?DEBUG(read, [Key]),
       Pid ! db:read(Key, Db),
       loop(Db);
     {match, Pid, [Element]} ->
+      ?DEBUG(match, [Element]),
       Pid ! db:match(Element, Db),
       loop(Db)
   end.
